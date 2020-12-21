@@ -1,5 +1,12 @@
 FROM php:8.0-apache
-COPY ./php.ini /usr/local/etc/php/
+
+# apache2 config
+ENV APACHE_DOCUMENT_ROOT /var/www/html/web
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
+  && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
+  && sed -i -e "s/AllowOverride None/AllowOverride All/g" /etc/apache2/apache2.conf
+
+# php config
 RUN apt update \
   && apt install -y libicu-dev autoconf make g++ gcc apt-utils \
   && apt install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev libonig-dev \
@@ -9,7 +16,6 @@ RUN apt update \
   && apt upgrade -y \
   && apt autoremove -y \
   && apt clean -y
-
 RUN { \
   echo 'short_open_tag = On'; \
   echo 'fastcgi.logging = 1'; \

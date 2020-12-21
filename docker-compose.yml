@@ -35,7 +35,9 @@ services:
     volumes:
       - ./html:/var/www/html
     ports:
-      - "10080:80"
+      - "8080:80"
+    environment:
+      - TZ=${TZ}
     depends_on:
       - mysql
 
